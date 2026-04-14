@@ -4,9 +4,10 @@ import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Square } from "lucide-react"
 
 interface VirtualJoystickProps {
   onMove: (direction: string) => void;
+  disabled?: boolean;
 }
 
-const VirtualJoystick = ({ onMove }: VirtualJoystickProps) => {
+const VirtualJoystick = ({ onMove, disabled = false }: VirtualJoystickProps) => {
   return (
     <Card className="border-border/50 bg-card/50 backdrop-blur shadow-lg">
       <CardHeader>
@@ -18,6 +19,7 @@ const VirtualJoystick = ({ onMove }: VirtualJoystickProps) => {
           <Button
             size="lg"
             onClick={() => onMove("forward")}
+            disabled={disabled}
             className="bg-primary hover:bg-primary-glow text-primary-foreground shadow-lg hover:shadow-[var(--shadow-glow)] transition-all"
           >
             <ArrowUp className="w-6 h-6" />
@@ -27,6 +29,7 @@ const VirtualJoystick = ({ onMove }: VirtualJoystickProps) => {
           <Button
             size="lg"
             onClick={() => onMove("left")}
+            disabled={disabled}
             className="bg-primary hover:bg-primary-glow text-primary-foreground shadow-lg hover:shadow-[var(--shadow-glow)] transition-all"
           >
             <ArrowLeft className="w-6 h-6" />
@@ -42,6 +45,7 @@ const VirtualJoystick = ({ onMove }: VirtualJoystickProps) => {
           <Button
             size="lg"
             onClick={() => onMove("right")}
+            disabled={disabled}
             className="bg-primary hover:bg-primary-glow text-primary-foreground shadow-lg hover:shadow-[var(--shadow-glow)] transition-all"
           >
             <ArrowRight className="w-6 h-6" />
@@ -51,6 +55,7 @@ const VirtualJoystick = ({ onMove }: VirtualJoystickProps) => {
           <Button
             size="lg"
             onClick={() => onMove("backward")}
+            disabled={disabled}
             className="bg-primary hover:bg-primary-glow text-primary-foreground shadow-lg hover:shadow-[var(--shadow-glow)] transition-all"
           >
             <ArrowDown className="w-6 h-6" />

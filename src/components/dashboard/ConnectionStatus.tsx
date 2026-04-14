@@ -1,31 +1,34 @@
-import { useState, useEffect } from "react";
-import { Wifi, WifiOff } from "lucide-react";
+import { Wifi, WifiOff, AlertTriangle } from "lucide-react";
 
-const ConnectionStatus = () => {
-  const [isConnected, setIsConnected] = useState(true);
+interface ConnectionStatusProps {
+  health: 'healthy' | 'stale' | 'disconnected';
+  statusMessage: string;
+}
 
-  useEffect(() => {
-    // Simulate connection status (replace with actual backend connection check)
-    const interval = setInterval(() => {
-      setIsConnected(Math.random() > 0.1); // 90% uptime simulation
-    }, 5000);
+const ConnectionStatus = ({ health, statusMessage }: ConnectionStatusProps) => {
 
-    return () => clearInterval(interval);
-  }, []);
+  if (health === 'healthy') {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-card/50">
+        <Wifi className="w-4 h-4 text-success" />
+        <span className="text-xs font-medium text-success">{statusMessage}</span>
+      </div>
+    );
+  }
+
+  if (health === 'stale') {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500/50 bg-amber-500/10">
+        <AlertTriangle className="w-4 h-4 text-amber-500" />
+        <span className="text-xs font-medium text-amber-500">{statusMessage}</span>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-card/50">
-      {isConnected ? (
-        <>
-          <Wifi className="w-4 h-4 text-success" />
-          <span className="text-xs font-medium text-success">Connected</span>
-        </>
-      ) : (
-        <>
-          <WifiOff className="w-4 h-4 text-destructive" />
-          <span className="text-xs font-medium text-destructive">Disconnected</span>
-        </>
-      )}
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-destructive/50 bg-destructive/10">
+      <WifiOff className="w-4 h-4 text-destructive" />
+      <span className="text-xs font-medium text-destructive">{statusMessage}</span>
     </div>
   );
 };

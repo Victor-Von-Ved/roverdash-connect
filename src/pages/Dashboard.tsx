@@ -10,19 +10,34 @@ import CameraFeed from "@/components/dashboard/CameraFeed";
 import VirtualJoystick from "@/components/dashboard/VirtualJoystick";
 import LocationDisplay from "@/components/dashboard/LocationDisplay";
 import ConnectionStatus from "@/components/dashboard/ConnectionStatus";
+import EmergencyStop from "@/components/dashboard/EmergencyStop";
+import { useTelemetry } from "@/hooks/useTelemetry";
+import { useCommandChannel } from "@/hooks/useCommandChannel";
+import { useConnectionHealth } from "@/hooks/useConnectionHealth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
-  const [roverData, setRoverData] = useState({
+  const telemetry = useTelemetry();
+
+  // Map new typed telemetry to existing component props
+  const roverData = telemetry.data ? {
+    speed: telemetry.data.mobility.speed,
+    battery: telemetry.data.power.batteryPercentage,
+    temperature: telemetry.data.environment.temperature,
+    sensorReadings: {
+      distance: telemetry.data.environment.signalQuality,
+      altitude: telemetry.data.pose.heading,
+    }
+  } : {
     speed: 0,
-    battery: 100,
-    temperature: 22,
+    battery: 0,
+    temperature: 0,
     sensorReadings: {
       distance: 0,
       altitude: 0,
     }
-  });
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -44,33 +59,21 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  useEffect(() => {
-    // Simulate real-time data updates
-    const interval = setInterval(() => {
-      setRoverData(prev => ({
-        speed: Math.max(0, prev.speed + (Math.random() - 0.5) * 5),
-        battery: Math.max(0, Math.min(100, prev.battery - Math.random() * 0.1)),
-        temperature: Math.max(15, Math.min(35, prev.temperature + (Math.random() - 0.5) * 2)),
-        sensorReadings: {
-          distance: Math.max(0, prev.sensorReadings.distance + (Math.random() - 0.5) * 10),
-          altitude: Math.max(0, prev.sensorReadings.altitude + (Math.random() - 0.5) * 5),
-        }
-      }));
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast.success("Logged out successfully");
     navigate("/auth");
   };
 
+  const commandChannel = useCommandChannel();
+  const connectionHealth = useConnectionHealth(telemetry);
+
   const handleMovement = (direction: string) => {
-    toast.info(`Moving ${direction}`);
-    // Here you would send the command to your Flask backend
-    console.log(`Command sent: ${direction}`);
+    const validDirections = ['forward', 'backward', 'left', 'right'] as const;
+    if (validDirections.includes(direction as any)) {
+      commandChannel.sendDriveCommand(direction as any);
+      toast.info(`Moving ${direction}`);
+    }
   };
 
   if (!session) return null;
@@ -90,7 +93,11 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <ConnectionStatus />
+            <ConnectionStatus 
+              health={connectionHealth.health} 
+              statusMessage={connectionHealth.statusMessage}
+            />
+            <EmergencyStop />
             <Button 
               variant="outline" 
               size="sm"
@@ -113,7 +120,10 @@ const Dashboard = () => {
           
           {/* Controls */}
           <div className="space-y-6">
-            <VirtualJoystick onMove={handleMovement} />
+            <VirtualJoystick 
+              onMove={handleMovement} 
+              disabled={!connectionHealth.controlsAllowed}
+            />
             <LocationDisplay />
           </div>
         </div>
