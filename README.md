@@ -1,5 +1,6 @@
 # RoverDash Connect
 
+<<<<<<< HEAD
 A real-time telemetry dashboard for rover operations, providing live monitoring and control capabilities for autonomous and remotely operated vehicles.
 
 ## Overview
@@ -212,3 +213,98 @@ University of Leeds
 
 ## Acknowledgments
 Built for the UKRA Rover Competition with focus on reliability and real-time performance for field operations.
+=======
+Browser-based mission control system for rover competition operations.
+
+This application provides real-time telemetry monitoring, camera feeds, and command/control capabilities for rover operations. Built for UKSEDS competitions.
+
+---
+
+## Technology Stack
+- React 18 + TypeScript
+- Vite
+- Tailwind CSS + shadcn/ui
+- Supabase Authentication
+- WebSocket real-time telemetry
+
+---
+
+## Local Development Setup
+
+### Prerequisites
+- Node.js 18+
+- npm or bun
+- Supabase project account
+
+### Step 1: Clone and install dependencies
+```bash
+git clone https://github.com/Victor-Von-Ved/roverdash-connect.git
+cd roverdash-connect
+npm install
+```
+
+### Step 2: Configure environment variables
+```bash
+# Copy the example environment file
+cp .env.example .env
+```
+
+Edit `.env` and fill in your Supabase credentials:
+```env
+# Required: Supabase configuration from your project settings
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+
+# Optional: Mission gateway WebSocket URL (when backend is available)
+VITE_GATEWAY_WS_URL=
+```
+
+### Step 3: Start development server
+```bash
+npm run dev
+```
+
+Application will be available at `http://localhost:5173`
+
+---
+
+## Supabase Usage
+
+Supabase is used in this repository for:
+✅ User authentication and session management
+✅ Role based access control
+✅ Persistent storage for mission logs and events
+✅ Row level security for operational data
+
+All authentication operations are handled through the Supabase client located at `src/integrations/supabase/client.ts`.
+
+---
+
+## Environment Variables Reference
+
+| Variable | Required | Description |
+|---|---|---|
+| `VITE_SUPABASE_URL` | ✅ | Full project URL from Supabase project settings |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅ | Public anon key from Supabase project settings |
+| `VITE_GATEWAY_WS_URL` | ❌ | WebSocket endpoint for mission gateway backend |
+
+---
+
+## Build for Production
+```bash
+npm run build
+```
+
+Production output will be generated in the `dist/` directory.
+
+---
+
+## Local Setup Checklist
+- [ ] Repository cloned successfully
+- [ ] Dependencies installed with `npm install`
+- [ ] `.env` file created from `.env.example`
+- [ ] Supabase URL and API key are correctly configured
+- [ ] Development server starts without errors
+- [ ] Authentication pages load correctly
+- [ ] Dashboard telemetry updates successfully
+>>>>>>> eb9191c (fix: align Supabase project URL and auth config)
